@@ -1,0 +1,20 @@
+.wrap {
+    position: relative;
+    width: 800px;
+    margin: auto;
+}
+
+video,
+canvas {
+    inset: 0;
+    width: 800px;
+    height: 480px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+canvas {
+    left: 0;
+    top: 0;
+    position: absolute;
+}

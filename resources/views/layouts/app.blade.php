@@ -71,6 +71,29 @@
     <script src="{{ asset('argon') }}/vendor/daterange/js/daterangepicker.min.js"></script>
     <script src="{{ asset('argon') }}/js/custom/custom.js"></script>
     <script src="{{ asset('argon') }}/js/argon.js?v=1.0.0"></script>
+    <script>       
+        const Swal_Confirm = Swal.mixin({
+            icon: 'question',
+            confirmButtonText: 'Yes',
+            showCancelButton: true,
+        });
+
+        const Toast_info = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            timer: 3000,
+            timerProgressBar: true,
+            showConfirmButton: false,
+        });
+
+        const Toast_info_long = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            timer: 6000,
+            timerProgressBar: true,
+            showConfirmButton: false,
+        });
+    </script>
     @auth()
     <script src="{{ asset('argon') }}/js/custom/stats.js"></script>
     @endauth

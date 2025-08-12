@@ -84,6 +84,27 @@
                 </a>
             </li>
             @endcan
+            @can('coupon_access')
+            <li class="nav-item">
+                <a class="nav-link" href="{{route('coupon.index')}}">
+                    <i class="fas fa-ticket-alt text-blue"></i> {{ __('Coupon') }}
+                </a>
+            </li>
+            @endcan
+            @can('redeem_treasure_access')
+            <li class="nav-item">
+                <a class="nav-link" href="{{route('redeem.treasure')}}">
+                    <i class="fas fa-gem text-blue"></i> {{ __('Redeem Treasure') }}
+                </a>
+            </li>
+            @endcan
+            @can('redeem_coupon_access')
+            <li class="nav-item">
+                <a class="nav-link" href="{{route('redeem.coupon')}}">
+                    <i class="fas fa-gift text-blue"></i> {{ __('Redeem Coupon') }}
+                </a>
+            </li>
+            @endcan
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('logout') }}" onclick="event.preventDefault();
                     document.getElementById('logout-form').submit();">

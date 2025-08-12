@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Staff;
+namespace App\Http\Controllers\Member;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -10,6 +10,6 @@ class LoginController extends Controller
     //
     public function index(Request $request)
     {
-        return view('staff.login.index');
+        return view('frontend.login.index');
     }
 }

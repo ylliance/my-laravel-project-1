@@ -33,22 +33,33 @@ Route::group(['middleware' => ['auth']], function () {
 
 	Route::group(['namespace' => 'Admin'], function () {
 
+		Route::resources([
+			'coupon' => 'CouponController',
+		]);
 		Route::resource('roles', 'RolesController');
 		Route::resource('users', 'UsersController');
 		Route::resource('members', 'MembersController')->except(['show']);
+
+		Route::get('redeem/treasure', 'RedeemTreasureController@index')->name('redeem.treasure');		
+		Route::post('treasure/getMemberStamps', 'RedeemTreasureController@getUserStamp')->name('treasure.getMemberStamps');
+		Route::post('treasure/setStampUsed', 'RedeemTreasureController@setStampUsed')->name('treasure.setStampUsed');
+
+		
+		Route::get('redeem/coupon', 'RedeemCouponController@index')->name('redeem.coupon');		
+		Route::post('coupon/getCoupon', 'RedeemCouponController@getCoupon')->name('coupon.getCoupon');		
+		Route::post('coupon/setCouponUsed', 'RedeemCouponController@setCouponUsed')->name('coupon.setCouponUsed');		
 
 		Route::post('users/createtoken', 'UsersController@createBranchApiToken')->name('users.createtoken');
 	});
 });
 
-// Route::resource('members', MembersController::class)->except(['show']);
-
 Route::get('members/search', [MembersController::class, 'search'])->name('members.search');
 
-Route::prefix('staff')
-	->as('staff.')
+
+Route::prefix('member')
+	->as('member.')
 	->group(function() {
-		Route::group(['namespace' => 'Staff'], function () {
+		Route::group(['namespace' => 'Member'], function () {
 			Route::get('login', 'LoginController@index')->name('login');
 		});
 	});
