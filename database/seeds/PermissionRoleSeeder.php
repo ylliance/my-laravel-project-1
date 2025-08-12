@@ -11,7 +11,10 @@ class PermissionRoleSeeder extends Seeder
      */
     public function run()
     {
-        //
+        Schema::disableForeignKeyConstraints();
+        \DB::table('permission_role')->truncate();
+        Schema::enableForeignKeyConstraints();
+        
         DB::table('permission_role')->insert([
             ['role_id' => 1, 'permission_id' => 1],
             ['role_id' => 1, 'permission_id' => 2],

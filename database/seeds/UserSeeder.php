@@ -14,7 +14,10 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
-        //
+        Schema::disableForeignKeyConstraints();
+        \DB::table('users')->truncate();
+        Schema::enableForeignKeyConstraints();
+
         DB::table('users')->insert([
             ['name' => "Super Admin", 'email' => "admin@admin.com", 'password' => Hash::make('secret2025'), 'ip_address' => '127.0.0.1'],
             ['name' => "Talent-0", 'email' => "talent0@talent.com", 'password' => Hash::make('secret2025'), 'ip_address' => '127.0.0.1'],
