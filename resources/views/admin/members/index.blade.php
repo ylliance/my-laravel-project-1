@@ -25,8 +25,18 @@ array(
                         </div>
                     </div>
                 </div>
+                <div class="col-12">
+                    @if (session('status'))
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ session('status') }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    @endif
+                </div>
                 <div class="table-responsive">
-                    <table class="table table-flush">
+                    <table id="dataTable" class="table table-flush">
                         <thead class="thead-light">
                             <tr>
                                 <th>{{ __('No') }}</th>
@@ -35,6 +45,7 @@ array(
                                 <th>{{ __('Email') }}</th>
                                 <th>{{ __('Created At') }}</th>
                                 <th>{{ __('Last Login') }}</th>
+                                <th>{{ __('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -46,6 +57,21 @@ array(
                                 <td><a href="mailto:{{ $member->email}}">{{ $member->email }}</a></td>
                                 <td>{{ $member->created_at }}</td>
                                 <td>{{ $member->last_login }}</td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="memberActions{{ $member->id }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            {{ __('Actions') }}
+                                        </button>
+                                        <div class="dropdown-menu" aria-labelledby="memberActions{{ $member->id }}">
+                                            <a class="dropdown-item" href="#">{{ __('Edit member') }}</a>
+                                            <form action="{{ route('members.destroy', $member->id) }}" method="POST" onsubmit="return confirm('Are you sure?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="dropdown-item">{{ __('Delete member') }}</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </td>
                             </tr>
                             @endforeach
                         </tbody>
