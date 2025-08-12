@@ -77,7 +77,14 @@
                 </a>
             </li>
             @endcan
-            
+            @can('member_access')
+            <li class="nav-item">
+                <a class="nav-link" href="{{route('members.index')}}">
+                    <i class="fas fa-users text-blue"></i> {{ __('Member') }}
+                </a>
+            </li>
+            @endcan
+
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('logout') }}" onclick="event.preventDefault();
                     document.getElementById('logout-form').submit();">
