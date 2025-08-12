@@ -84,7 +84,7 @@ class UsersController extends Controller
 
         $user->delete();
 
-        return back()->withStatus(__('User is deleted successfully.'));;;
+        return back()->withStatus(__('User is deleted successfully.'));
     }
 
     public function massDestroy(Request $request)
@@ -98,7 +98,7 @@ class UsersController extends Controller
         auth()->user()->update([
             'name' => $request->name,
         ]);
-        return back()->withStatus(__('Profile is updated successfully.'));;;
+        return back()->withStatus(__('Profile is updated successfully.'));
     }
     public function password(PasswordRequest $request)
     {
