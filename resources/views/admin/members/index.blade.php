@@ -31,6 +31,8 @@ array(
                             <tr>
                                 <th>{{ __('No') }}</th>
                                 <th>{{ __('Username') }}</th>
+                                <th>{{ __('Phone number') }}</th>
+                                <th>{{ __('Email') }}</th>
                                 <th>{{ __('Created At') }}</th>
                                 <th>{{ __('Last Login') }}</th>
                             </tr>
@@ -40,6 +42,8 @@ array(
                             <tr>
                                 <td>{{ ($members->currentPage() - 1) * $members->perPage() + $loop->iteration }}</td>
                                 <td>{{ $member->username }}</td>
+                                <td>{{ $member->phone_number }}</td>
+                                <td><a href="mailto:{{ $member->email}}">{{ $member->email }}</a></td>
                                 <td>{{ $member->created_at }}</td>
                                 <td>{{ $member->last_login }}</td>
                             </tr>
