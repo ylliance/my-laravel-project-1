@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Http\Controllers\Admin;
-
 use App\Http\Controllers\Controller;
 use App\Member;
 use Gate;
@@ -13,41 +11,50 @@ class MembersController extends Controller
     public function index()
     {
         abort_if(Gate::denies('member_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-
         $members = Member::paginate(10);
-
         return view('admin.members.index', compact('members'));
     }
 
-    
     public function create()
     {
         abort_if(Gate::denies('member_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-
         return view('admin.members.create');
     }
 
     public function store(Request $request)
     {
         abort_if(Gate::denies('member_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-
         $request->validate([
             'username' => 'bail|required|max:255|min:4',
             'email' => 'bail|required|email|unique:members|max:255',
             'phone_number' => 'bail|required',
         ]);
-
         Member::create($request->all());
-
         return redirect()->route('members.index')->withStatus(__('Member is added successfully.'));
     }
-    
+
+    public function edit(Member $member)
+    {
+        abort_if(Gate::denies('member_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        return view('admin.members.edit', compact('member'));
+    }
+
+    public function update(Request $request, Member $member)
+    {
+        abort_if(Gate::denies('member_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        $request->validate([
+            'username' => 'bail|required|max:255|min:4',
+            'email' => 'bail|required|email|max:255|unique:members,email,' . $member->id,
+            'phone_number' => 'bail|required',
+        ]);
+        $member->update($request->all());
+        return redirect()->route('members.index')->withStatus(__('Member is updated successfully.'));
+    }
+
     public function destroy(Member $member)
     {
         abort_if(Gate::denies('member_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-
         $member->delete();
-
         return back()->withStatus(__('Member is deleted successfully.'));
     }
 
@@ -55,7 +62,6 @@ class MembersController extends Controller
     public function search(Request $request)
     {
         $query = Member::query();
-
         $search = $request->input('search.value');
         if ($search) {
             $query->where(function($q) use ($search) {
@@ -64,16 +70,13 @@ class MembersController extends Controller
                   ->orWhere('phone_number', 'like', "%$search%");
             });
         }
-
         $total = $query->count();
-
         $start = $request->input('start', 0);
         $length = $request->input('length', 10);
         $members = $query->orderBy('created_at', 'desc')
             ->skip($start)
             ->take($length)
             ->get();
-
         $data = [];
         foreach ($members as $i => $member) {
             $data[] = [
