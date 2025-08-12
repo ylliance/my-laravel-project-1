@@ -13,7 +13,7 @@ class MemberSeeder extends Seeder
     public function run()
     {
         Schema::disableForeignKeyConstraints();
-        \DB::table('members')->truncate(); // or Member::truncate();
+        \DB::table('members')->truncate();
         Schema::enableForeignKeyConstraints();
         
         factory(Member::class, 50)->create();

@@ -11,7 +11,10 @@ class RoleUserSeeder extends Seeder
      */
     public function run()
     {
-        //
+        Schema::disableForeignKeyConstraints();
+        \DB::table('role_user')->truncate();
+        Schema::enableForeignKeyConstraints();
+
         DB::table('role_user')->insert([
             ['user_id' => 1, 'role_id' => 1],
             ['user_id' => 2, 'role_id' => 2],
