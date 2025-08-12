@@ -1,0 +1,77 @@
+.dataTables_wrapper {
+    font-size: .875rem
+}
+
+table.dataTable {
+    margin-bottom: 1.25rem !important;
+    border-bottom: 1px solid #e9ecef
+}
+
+table.dataTable tbody>tr.selected {
+    background-color: #5e72e4
+}
+
+.dataTables_info,
+.dataTables_length,
+.dt-buttons {
+    padding-left: 1.5rem;
+    padding-bottom: 0.5rem;
+}
+
+.dataTables_length .form-control {
+    margin: 0 .375rem
+}
+
+.dataTables_filter {
+    display: inline-block;
+    float: right;
+    padding-right: 1.5rem
+}
+
+.dataTables_paginate {
+    padding-right: 1.5rem
+}
+
+.invalid-div {
+    color: red;
+    font-weight: 600;
+    padding-top: 4px;
+}
+
+.select2-selection {
+    color: #8898aa !important;
+    border: 1px solid #cad1d7 !important;
+    border-radius: .375rem !important;
+    min-height: calc(2.75rem + 2px) !important;
+    padding: .625rem .75rem !important;
+}
+
+#dataTable tr td {
+    white-space: normal !important;
+}
+
+.bg-blue-own {
+    background-color: white !important
+}
+
+.table {
+    width: 100% !important;
+}
+
+.img-own {
+    width: 100% !important;
+    max-width: 125px !important;
+}
+
+.badge-own {
+    text-transform: none
+}
+
+.pp-btn {
+    margin-top: 8px;
+    padding-right: 0px
+}
+
+.navbar-heading {
+    padding: 0rem 1.5rem !important
+}
