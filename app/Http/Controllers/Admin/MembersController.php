@@ -50,4 +50,48 @@ class MembersController extends Controller
 
         return back()->withStatus(__('Member is deleted successfully.'));
     }
+
+    // DataTables server-side search
+    public function search(Request $request)
+    {
+        $query = Member::query();
+
+        $search = $request->input('search.value');
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('username', 'like', "%$search%")
+                  ->orWhere('email', 'like', "%$search%")
+                  ->orWhere('phone_number', 'like', "%$search%");
+            });
+        }
+
+        $total = $query->count();
+
+        $start = $request->input('start', 0);
+        $length = $request->input('length', 10);
+        $members = $query->orderBy('created_at', 'desc')
+            ->skip($start)
+            ->take($length)
+            ->get();
+
+        $data = [];
+        foreach ($members as $i => $member) {
+            $data[] = [
+                'no' => $start + $i + 1,
+                'username' => $member->username,
+                'phone_number' => $member->phone_number,
+                'email' => '<a href="mailto:' . e($member->email) . '">' . e($member->email) . '</a>',
+                'created_at' => $member->created_at->format('Y-m-d H:i'),
+                'last_login' => $member->last_login ? $member->last_login : '-',
+                'action' => view('admin.members.partials.actions', compact('member'))->render(),
+            ];
+        }
+
+        return response()->json([
+            'draw' => intval($request->input('draw')),
+            'recordsTotal' => $total,
+            'recordsFiltered' => $total,
+            'data' => $data,
+        ]);
+    }
 }

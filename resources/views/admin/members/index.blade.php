@@ -36,7 +36,7 @@ array(
                     @endif
                 </div>
                 <div class="table-responsive">
-                    <table id="dataTable" class="table table-flush">
+                    <table id="membersDataTable" class="table table-flush">
                         <thead class="thead-light">
                             <tr>
                                 <th>{{ __('No') }}</th>
@@ -48,40 +48,57 @@ array(
                                 <th>{{ __('Actions') }}</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            @foreach ($members as $member)
-                            <tr>
-                                <td>{{ ($members->currentPage() - 1) * $members->perPage() + $loop->iteration }}</td>
-                                <td>{{ $member->username }}</td>
-                                <td>{{ $member->phone_number }}</td>
-                                <td><a href="mailto:{{ $member->email}}">{{ $member->email }}</a></td>
-                                <td>{{ $member->created_at }}</td>
-                                <td>{{ $member->last_login }}</td>
-                                <td>
-                                    <div class="dropdown">
-                                        <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="memberActions{{ $member->id }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            {{ __('Actions') }}
-                                        </button>
-                                        <div class="dropdown-menu" aria-labelledby="memberActions{{ $member->id }}">
-                                            <a class="dropdown-item" href="#">{{ __('Edit member') }}</a>
-                                            <form action="{{ route('members.destroy', $member->id) }}" method="POST" onsubmit="return confirm('Are you sure?');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="dropdown-item">{{ __('Delete member') }}</button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
                     </table>
                 </div>
-                <div class="card-footer py-4">
-                    {{ $members->links() }}
-                </div>
+                <!-- Pagination handled by DataTables -->
             </div>
         </div>
     </div>
 </div>
+@push('page-script')
+<!-- DataTables Bootstrap 4 integration -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css">
+<script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
+<script>
+$(function () {
+  $('#membersDataTable').DataTable({
+    processing: true,
+    serverSide: true,
+    ajax: {
+      url: "{{ route('members.search') }}",
+      type: 'GET',
+      error: function (xhr) {
+        console.error('DataTables AJAX error:', xhr.status, xhr.responseText);
+        alert('Failed to load members: ' + xhr.status + ' — check console for details.');
+      }
+    },
+    columns: [
+      { data: 'no', name: 'no' },
+      { data: 'username', name: 'username' },
+      { data: 'phone_number', name: 'phone_number' },
+      { data: 'email', name: 'email' },
+      { data: 'created_at', name: 'created_at' },
+      { data: 'last_login', name: 'last_login' },
+      { data: 'action', name: 'action', orderable: false, searchable: false },
+    ],
+    order: [[4, 'desc']],
+    scrollX: true,
+    bLengthChange: false,
+    pagingType: 'simple_numbers', // Use simple pagination style
+    language: {
+      paginate: {
+        previous: '<i class="fas fa-angle-left"></i>',
+        next: '<i class="fas fa-angle-right"></i>'
+      }
+    },
+  });
+
+  $('#member-search').on('keyup', function () {
+    var table = $('#membersDataTable').DataTable();
+    table.search($(this).val()).draw();
+  });
+});
+</script>
+@endpush
 @endsection

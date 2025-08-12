@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\MembersController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,16 +33,17 @@ Route::group(['middleware' => ['auth']], function () {
 
 	Route::group(['namespace' => 'Admin'], function () {
 
-		Route::resources([
-			'roles' => 'RolesController',
-			'users' => 'UsersController',
-			'members' => 'MembersController',
-		]);
+		Route::resource('roles', 'RolesController');
+		Route::resource('users', 'UsersController');
+		Route::resource('members', 'MembersController')->except(['show']);
 
 		Route::post('users/createtoken', 'UsersController@createBranchApiToken')->name('users.createtoken');
 	});
 });
 
+// Route::resource('members', MembersController::class)->except(['show']);
+
+Route::get('members/search', [MembersController::class, 'search'])->name('members.search');
 
 Route::prefix('staff')
 	->as('staff.')
