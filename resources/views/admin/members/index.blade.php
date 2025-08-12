@@ -19,7 +19,7 @@ array(
                             <h3 class="mb-0">{{ __('Members') }}</h3>
                         </div>
                         <div class="col-6 text-right">
-                            <a href="#" class="btn btn-sm btn-primary">{{ __('Add Member') }}</a>
+                            <a href="{{ route('members.create') }}" class="btn btn-sm btn-primary">{{ __('Add Member') }}</a>
                             <a href="#" class="btn btn-sm btn-default">{{ __('Export to CSV') }}</a>
                             <a href="#" class="btn btn-sm btn-default">{{ __('Import to CSV') }}</a>
                         </div>
