@@ -41,4 +41,13 @@ class MembersController extends Controller
 
         return redirect()->route('members.index')->withStatus(__('Member is added successfully.'));
     }
+    
+    public function destroy(Member $member)
+    {
+        abort_if(Gate::denies('member_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $member->delete();
+
+        return back()->withStatus(__('Member is deleted successfully.'));
+    }
 }
