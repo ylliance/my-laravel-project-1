@@ -77,11 +77,6 @@
                 </a>
             </li>
             @endcan
-            <li class="nav-item">
-                <a class="nav-link" href="{{route('members.index')}}">
-                    <i class="fa fa-users text-blue"></i> {{ __('Member') }}
-                </a>
-            </li>
             
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('logout') }}" onclick="event.preventDefault();
