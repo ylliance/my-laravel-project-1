@@ -61,31 +61,37 @@ class MembersController extends Controller
     // DataTables server-side search
     public function search(Request $request)
     {
-        $query = Member::query();
         $search = $request->input('search.value');
+        $start = $request->input('start', 0);
+        $length = $request->input('length', 10);
+
+        $membersQuery = Member::query();
         if ($search) {
-            $query->where(function($q) use ($search) {
+            $membersQuery->where(function($q) use ($search) {
                 $q->where('username', 'like', "%$search%")
                   ->orWhere('email', 'like', "%$search%")
                   ->orWhere('phone_number', 'like', "%$search%");
             });
         }
-        $total = $query->count();
-        $start = $request->input('start', 0);
-        $length = $request->input('length', 10);
-        $members = $query->orderBy('created_at', 'desc')
+
+        $total = $membersQuery->count();
+        $members = $membersQuery->with('stamps')
+            ->orderBy('created_at', 'desc')
             ->skip($start)
             ->take($length)
             ->get();
+
         $data = [];
         foreach ($members as $i => $member) {
+            $stampInfo = $member->stamps;
             $data[] = [
                 'no' => $start + $i + 1,
                 'username' => $member->username,
                 'phone_number' => $member->phone_number,
                 'email' => '<a href="mailto:' . e($member->email) . '">' . e($member->email) . '</a>',
-                'created_at' => $member->created_at->format('Y-m-d H:i'),
+                'created_at' => $member->created_at->format('Y-m-d H:i:s'),
                 'last_login' => $member->last_login ? $member->last_login : '-',
+                'stamps' => $stampInfo,
                 'action' => view('admin.members.partials.actions', compact('member'))->render(),
             ];
         }

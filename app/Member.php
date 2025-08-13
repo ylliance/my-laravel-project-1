@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Member extends Model
 {
-    //
     protected $table = 'members';
     protected $fillable = [
         'username',
@@ -17,7 +16,6 @@ class Member extends Model
 
     public function stamps()
     {
-
         return $this->hasMany('App\MemberStamps', 'member_id', 'id');
     }
 }

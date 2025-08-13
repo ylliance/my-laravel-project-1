@@ -43,6 +43,7 @@ array(
                                 <th>{{ __('Username') }}</th>
                                 <th>{{ __('Phone number') }}</th>
                                 <th>{{ __('Email') }}</th>
+                                <th>{{ __('Stamps') }}</th>
                                 <th>{{ __('Created At') }}</th>
                                 <th>{{ __('Last Login') }}</th>
                                 <th>{{ __('Actions') }}</th>
@@ -78,6 +79,24 @@ $(function () {
       { data: 'username', name: 'username' },
       { data: 'phone_number', name: 'phone_number' },
       { data: 'email', name: 'email' },
+      {
+        data: 'stamps',
+        name: 'stamps',
+        render: function(data, type, row) {
+          // data is an array of stamp objects
+          if (!Array.isArray(data) || data.length === 0) return '';
+          var html = '<div style="display:flex;">';
+            data.forEach(function(stamp) {
+            // Use moment.js to format datetime
+            var formatted = stamp.created_at ? moment(stamp.created_at).format('YYYY-MM-DD HH:mm:ss') : '';
+            html += '<img src="/argon/img/stamp.png" alt="stamp" style="height:32px;margin-right:4px;" title="' + formatted + '">';
+          });
+          html += '</div>';
+          return html;
+        },
+        orderable: false,
+        searchable: false
+      },
       { data: 'created_at', name: 'created_at' },
       { data: 'last_login', name: 'last_login' },
       { data: 'action', name: 'action', orderable: false, searchable: false },
@@ -85,7 +104,7 @@ $(function () {
     order: [[4, 'desc']],
     scrollX: true,
     bLengthChange: false,
-    pagingType: 'simple_numbers', // Use simple pagination style
+    pagingType: 'simple_numbers',
     language: {
       paginate: {
         previous: '<i class="fas fa-angle-left"></i>',
