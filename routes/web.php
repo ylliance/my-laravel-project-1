@@ -1,3 +1,4 @@
+
 <?php
 
 use Illuminate\Support\Facades\Artisan;
@@ -54,6 +55,7 @@ Route::group(['middleware' => ['auth']], function () {
 });
 
 Route::get('members/search', [MembersController::class, 'search'])->name('members.search');
+Route::get('members/export', [App\Http\Controllers\Admin\MembersController::class, 'export'])->name('members.export');
 
 
 Route::prefix('member')

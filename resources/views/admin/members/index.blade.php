@@ -20,7 +20,7 @@ array(
                         </div>
                         <div class="col-6 text-right">
                             <a href="{{ route('members.create') }}" class="btn btn-sm btn-primary">{{ __('Add Member') }}</a>
-                            <a href="#" class="btn btn-sm btn-default">{{ __('Export to CSV') }}</a>
+                            <a href="{{ route('members.export') }}" class="btn btn-sm btn-default">{{ __('Export to CSV') }}</a>
                             <a href="#" class="btn btn-sm btn-default">{{ __('Import to CSV') }}</a>
                         </div>
                     </div>

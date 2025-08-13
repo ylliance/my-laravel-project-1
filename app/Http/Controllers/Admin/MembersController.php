@@ -8,6 +8,36 @@ use Symfony\Component\HttpFoundation\Response;
 
 class MembersController extends Controller
 {
+    public function export()
+    {
+        $members = Member::all(['id', 'username', 'phone_number', 'email', 'last_login']);
+        $filename = 'members_' . now()->format('Ymd_His') . '.csv';
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=$filename",
+        ];
+
+        $callback = function() use ($members) {
+            $handle = fopen('php://output', 'w');
+            // CSV header
+            fputcsv($handle, ['id', 'username', 'phone_number', 'email', 'last_login']);
+            // CSV rows
+            foreach ($members as $member) {
+                fputcsv($handle, [
+                    $member->id,
+                    $member->username,
+                    $member->phone_number,
+                    $member->email,
+                    $member->last_login,
+                ]);
+            }
+            fclose($handle);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
     public function index()
     {
         abort_if(Gate::denies('member_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
