@@ -152,6 +152,9 @@ $(function () {
     $.ajax({
       url: "{{ route('members.import') }}?skip=1",
       type: 'POST',
+      headers: {
+        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+      },
       data: {},
       success: function() {
         $('#duplicateModal').modal('hide');

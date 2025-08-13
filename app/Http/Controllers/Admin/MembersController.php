@@ -33,6 +33,7 @@ class MembersController extends Controller
         $file = $request->file('csv');
         $handle = fopen($file->getRealPath(), 'r');
         $header = fgetcsv($handle);
+        $header = fgetcsv($handle);
 
         $members = [];
         while (($row = fgetcsv($handle)) !== false) {
