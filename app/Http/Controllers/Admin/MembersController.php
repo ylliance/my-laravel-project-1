@@ -8,6 +8,81 @@ use Symfony\Component\HttpFoundation\Response;
 
 class MembersController extends Controller
 {
+    public function import(Request $request)
+    {
+        // Handle skip request (after duplicate modal)
+        if ($request->query('skip')) {
+            $pending = session('pending_import');
+            if (!$pending) {
+                return response()->json(['error' => 'No pending import found.'], 400);
+            }
+            // Insert non-duplicate members
+            foreach ($pending['members'] as $member) {
+                if (!in_array($member['username'], $pending['duplicates'])) {
+                    Member::create($member);
+                }
+            }
+            session()->forget('pending_import');
+            return response()->json(['success' => true]);
+        }
+
+        // Initial upload
+        if (!$request->hasFile('csv')) {
+            return response()->json(['error' => 'No file uploaded.'], 400);
+        }
+        $file = $request->file('csv');
+        $handle = fopen($file->getRealPath(), 'r');
+        $header = fgetcsv($handle);
+
+        $members = [];
+        while (($row = fgetcsv($handle)) !== false) {
+            if (count($row) !== count($header)) {
+                // Optionally log or collect skipped rows for user feedback
+                continue; // skip malformed row
+            }
+            $data = array_combine($header, $row);
+            // Debug output for $data
+            $members[] = [
+                'username' => $data['username'] ?? '',
+                'email' => $data['email'] ?? '',
+                'phone_number' => $data['phone_number'] ?? '',
+                'created_at' => $data['created_at'] ?? now(),
+                'last_login' => $data['last_login'] ?? null,
+            ];
+        }
+        fclose($handle);
+
+        // Check for duplicates by username/email/phone_number
+        $duplicates = [];
+        foreach ($members as $member) {
+            $exists = Member::where('username', $member['username'])
+                ->orWhere('email', $member['email'])
+                ->orWhere('phone_number', $member['phone_number'])
+                ->exists();
+            if ($exists) {
+                $duplicates[] = $member['username'];
+            }
+        }
+
+        if ($duplicates) {
+            // Store pending import in session for skip
+            session(['pending_import' => [
+                'members' => $members,
+                'duplicates' => $duplicates
+            ]]);
+            // Return duplicate info for modal
+            $dupeDetails = array_filter($members, function($m) use ($duplicates) {
+                return in_array($m['username'], $duplicates);
+            });
+            return response()->json(['duplicates' => array_values($dupeDetails)]);
+        } else {
+            // No duplicates, insert all
+            foreach ($members as $member) {
+                Member::create($member);
+            }
+            return response()->json(['success' => true]);
+        }
+    }
     public function export()
     {
         $members = Member::all(['id', 'username', 'phone_number', 'email', 'last_login']);

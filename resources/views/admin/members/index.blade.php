@@ -21,7 +21,11 @@ array(
                         <div class="col-6 text-right">
                             <a href="{{ route('members.create') }}" class="btn btn-sm btn-primary">{{ __('Add Member') }}</a>
                             <a href="{{ route('members.export') }}" class="btn btn-sm btn-default">{{ __('Export to CSV') }}</a>
-                            <a href="#" class="btn btn-sm btn-default">{{ __('Import to CSV') }}</a>
+                            <a href="#" id="importCsvBtn" class="btn btn-sm btn-default">{{ __('Import from CSV') }}</a>
+                            <input type="file" id="importCsvInput" accept=".csv" style="display:none;">
+                            <div id="importProgress" class="progress" style="height: 20px; display:none; margin-top:10px;">
+                              <div class="progress-bar" role="progressbar" style="width:0%">0%</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -57,12 +61,108 @@ array(
     </div>
 </div>
 @push('page-script')
+<!-- Modal for duplicate handling -->
+<div class="modal fade" id="duplicateModal" tabindex="-1" role="dialog" aria-labelledby="duplicateModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="duplicateModalLabel">Duplicate Member Found</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="duplicateModalBody">
+        <!-- Content injected by JS -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="cancelImport">Cancel</button>
+        <button type="button" class="btn btn-warning" id="skipImport">Skip</button>
+      </div>
+    </div>
+  </div>
+</div>
 <!-- DataTables Bootstrap 4 integration -->
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css">
 <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
 <script>
 $(function () {
+  // Import CSV logic
+  $('#importCsvBtn').on('click', function(e) {
+    e.preventDefault();
+    $('#importCsvInput').val('');
+    $('#importCsvInput').click();
+  });
+
+  $('#importCsvInput').on('change', function() {
+    var file = this.files[0];
+    if (!file) return;
+    var formData = new FormData();
+    formData.append('csv', file);
+    $('#importProgress').show();
+    $('.progress-bar').css('width', '0%').text('0%');
+
+    $.ajax({
+      url: "{{ route('members.import') }}",
+      type: 'POST',
+      headers: {
+        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+      },
+      data: formData,
+      processData: false,
+      contentType: false,
+      xhr: function() {
+        var xhr = new window.XMLHttpRequest();
+        xhr.upload.addEventListener('progress', function(evt) {
+          if (evt.lengthComputable) {
+            var percent = Math.round((evt.loaded / evt.total) * 100);
+            $('.progress-bar').css('width', percent + '%').text(percent + '%');
+          }
+        }, false);
+        return xhr;
+      },
+      success: function(response) {
+        $('#importProgress').hide();
+        if (response.duplicates && response.duplicates.length > 0) {
+          // Show duplicate modal
+          var html = '<p>The following members are duplicates:</p><ul>';
+          response.duplicates.forEach(function(m) {
+            html += '<li>' + m.username + ' (' + m.email + ', ' + m.phone_number + ')</li>';
+          });
+          html += '</ul><p>Do you want to skip these and continue importing others?</p>';
+          $('#duplicateModalBody').html(html);
+          $('#duplicateModal').modal('show');
+        } else {
+          $('#membersDataTable').DataTable().ajax.reload();
+          alert('Import completed successfully!');
+        }
+      },
+      error: function(xhr) {
+        $('#importProgress').hide();
+        alert('Import failed: ' + xhr.responseText);
+      }
+    });
+  });
+
+  $('#cancelImport').on('click', function() {
+    $('#duplicateModal').modal('hide');
+  });
+  $('#skipImport').on('click', function() {
+    // Send request to skip duplicates
+    $.ajax({
+      url: "{{ route('members.import') }}?skip=1",
+      type: 'POST',
+      data: {},
+      success: function() {
+        $('#duplicateModal').modal('hide');
+        $('#membersDataTable').DataTable().ajax.reload();
+        alert('Import completed, duplicates skipped.');
+      },
+      error: function(xhr) {
+        alert('Import failed: ' + xhr.responseText);
+      }
+    });
+  });
   $('#membersDataTable').DataTable({
     processing: true,
     serverSide: true,

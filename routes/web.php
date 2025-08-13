@@ -56,6 +56,7 @@ Route::group(['middleware' => ['auth']], function () {
 
 Route::get('members/search', [MembersController::class, 'search'])->name('members.search');
 Route::get('members/export', [App\Http\Controllers\Admin\MembersController::class, 'export'])->name('members.export');
+Route::post('members/import', [App\Http\Controllers\Admin\MembersController::class, 'import'])->name('members.import');
 
 
 Route::prefix('member')
