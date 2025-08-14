@@ -215,11 +215,6 @@ $(function () {
       }
     },
   });
-
-  $('#member-search').on('keyup', function () {
-    var table = $('#membersDataTable').DataTable();
-    table.search($(this).val()).draw();
-  });
 });
 </script>
 @endpush

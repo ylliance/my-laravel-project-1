@@ -200,11 +200,6 @@ $(function () {
       }
     },
   });
-
-  $('#coupon-search').on('keyup', function () {
-    var table = $('#couponsDataTable').DataTable();
-    table.search($(this).val()).draw();
-  });
 });
 </script>
 @endpush
