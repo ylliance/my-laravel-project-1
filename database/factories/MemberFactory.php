@@ -7,6 +7,7 @@ use Faker\Generator as Faker;
 
 $factory->define(Member::class, function (Faker $faker) {
     return [
+        'uuid' => $faker->uuid,
         'username' => $faker->userName,
         'phone_number' => $faker->phoneNumber,
         'email' => $faker->unique()->safeEmail,

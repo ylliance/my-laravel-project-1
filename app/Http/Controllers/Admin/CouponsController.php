@@ -5,6 +5,7 @@ use App\Coupon;
 use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Auth;
 
 class CouponsController extends Controller
 {

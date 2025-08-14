@@ -10,9 +10,23 @@ array(
 'text'=>'Users',
 'text'=>'User List',
 ])))
-
 @push('css')
     <link href="{{ asset('argon') }}/css/qr-scan.css" rel="stylesheet">
+    <style>
+        .w-128 {
+            width: 128px;
+        }
+        .h-128 {
+            height: 128px;
+        }
+        .border-b-1 {
+            border-bottom: 1px solid #e9ecef;
+        }
+        .stamp-info {
+            display: flex;
+            align-content: center;
+        }
+    </style>
 @endpush
 <div class="container-fluid mt--7">
     <div class="row">
@@ -21,7 +35,7 @@ array(
                 <div class="card-header ">
                     <div class="row align-items-center">
                         <div class="col-8">
-                            <h3 class="mb-0">{{ __('Redeem Coupon') }}</h3>
+                            <h3 class="mb-0">{{ __('Redeem Stamp') }}</h3>
                         </div>
                         <div class="col-4 text-right">
                             <button class="btn btn-primary" id="startBtn">{{__('Start Scan')}}</button>
@@ -42,14 +56,14 @@ array(
     </div>
 </div>
 
-<div class="modal fade dialogbox" id="couponModal" data-bs-backdrop="static" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
+<div class="modal fade dialogbox" id="stampsModal" data-bs-backdrop="static" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Member Coupon</h5>
+                <h5 class="modal-title">Member STAMPS</h5>
             </div>
             <div class="modal-body">
-                <input type="hidden" id="couponId"/>
+                <input type="hidden" id="memberId"/>
                 <dl class="row mb-2">
                     <dt class="col-sm-4">Username: </dt>
                     <dd class="col-sm-8"><span id="mUsername"></span></dd>
@@ -60,15 +74,12 @@ array(
                     <dt class="col-sm-4">Email: </dt>
                     <dd class="col-sm-8"><span id="mEmail"></span></dd>
 
-                    <dt class="col-sm-4">Coupon No:</dt>
-                    <dd class="col-sm-8"><span id="mCouponNo"></span></dd>
-
-                    <dt class="col-sm-4">Shop:</dt>
-                    <dd class="col-sm-8"><span id="mShop"></span></dd>
-
-                    <dt class="col-sm-4">Status:</dt>
-                    <dd class="col-sm-8"><span id="mStatus"></span></dd>
+                    <dt class="col-sm-4">Stamp Count:</dt>
+                    <dd class="col-sm-8"><span id="mStampCount"></span></dd>
                 </dl>
+                <div class='dropdown-divider pt-2'></div>
+                <div id="mStamps" class="row pt-2">
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" id='redeemButton'>Redeem</button>
@@ -81,19 +92,19 @@ array(
 @push('page-script')
 <script>
     let isModalOpen = false;
-    const GET_MEMBER_COUPON_URL =  "{{route('coupon.getCoupon')}}";
-    const SET_MEMBER_COUPON_USED_URL =  "{{route('coupon.setCouponUsed')}}";
+    const GET_MEMBER_STAMPS_URL =  "{{route('treasure.getMemberStamps')}}";
+    const SET_STAMP_USED_URL =  "{{route('treasure.setStampUsed')}}";
 
-    function getMemberCoupon(jsonData) {
+    function getMemberStamps(userInfo) {
         if (isModalOpen)
             return;
 
         let result = null;
         $.ajax({
-            url: GET_MEMBER_COUPON_URL,
+            url: GET_MEMBER_STAMPS_URL,
             headers: { 'X-CSRF-TOKEN': '{{csrf_token()}}' },
             type: 'post',
-            data: jsonData,
+            data: userInfo,
             async: false,
             success: function (res) { result = res; },
             error: function (xhr) { 
@@ -106,23 +117,15 @@ array(
                 text: 'Server Connection Error!',
                 icon: 'error'
             });
-        } else if (result.success == false) {
-            if (result.msg == 'no coupon') {
-                Toast_info_long.fire({
-                    title: 'Warning',
-                    text: 'It\'s not avalid coupon QR code. Please contact to super admin.',
-                    icon: 'warning'
-                });
-            } else if (result.msg == 'no member') {
-                Toast_info_long.fire({
-                    title: 'Warning',
-                    text: 'He/She is not a valid member',
-                    icon: 'warning'
-                });
-            }
+        } else if (result.success == false) {            
+            Toast_info_long.fire({
+                title: 'Warning',
+                text: 'Invalide Member QR Code. Please contact to super admin.',
+                icon: 'warning'
+            });
         }
-        else{
-            showCouponDialog(result);
+        else {
+            showUserStampDialog(result);
         }
     }
 
@@ -131,51 +134,86 @@ array(
             return;
         
         try {
-            const jsonData = JSON.parse(data);
-            getMemberCoupon(jsonData);
+            const userInfo = JSON.parse(data);
+            getMemberStamps(userInfo);
         } catch (error) {
 
         }
-        getMemberCoupon({
-            'coupon_no': 'S546124$*%2343423534',
-            'member_id': 1
-        });
+
+        getMemberStamps({
+            uuid: 'eb0baac3-086b-3095-a292-822d4b4f91f4',          
+        })
     };
 
-    function showCouponDialog(result) {       
-        const {member, coupon} = result;
+    function showUserStampDialog(result) {       
+        const {member, stamps} = result;
         isModalOpen = true; 
 
         $('#mUsername').text(member.username);
         $('#mPhone').text(member.phone_number);
         $('#mEmail').text(member.email);
-        $('#couponId').val(coupon.id);
+        $('#mStampCount').text(stamps.length);
+        $('#memberId').val(member.id);
 
-        $('#mCouponNo').text(coupon.coupon_no);
-        $('#mShop').text(coupon.shop);
-        if(coupon.status == 'valid')
-            $('#mStatus').html(`<span class="badge badge-success">Valid</span>`);
-        else if(coupon.status == 'used')
-            $('#mStatus').html(`<span class="badge badge-danger">Used</span>`);
-        else
-            $('#mStatus').html(`<span class="badge badge-dark">Expired</span>`);
+        $stampDiv = $("#mStamps");
+        $stampDiv.html('');
         
-                                    
-        $('#couponModal').modal('show');
+        stamps.forEach((stampInfo, index) => {
+            let id = 'stamp-' + (index + 1);
+            $stampDiv.append(`
+                <div class="col-sm-6 border-b-1 py-3 stamp-info" id='${id}'>
+                    <div id="mQRCode" class="w-128 h-128" />
+                    <div class="ml-3">
+                        <div>
+                            <i class='fas fa-shopping-bag mr-2'/>
+                            <span id="name"></span>
+                        </div>
+                        <div>
+                            <i class='fas fa-address-card mr-2'/>
+                            <span id="address"></span>
+                        </div>
+                        <div>
+                            <i class='fas fa-mail-bulk mr-2'/>
+                            <span id="email"></span>
+                        </div>
+                        <div>
+                            <i class='fas fa-phone mr-2'/>
+                            <span id="phone"></span>
+                        </div>
+                    </dl>
+                </div>`
+            );
+
+            console.log(stampInfo.qr_code);
+            const qr = new QRCode(document.querySelector(`#${id} #mQRCode`), {
+                text: stampInfo.qr_code,
+                width: 128,
+                height: 128,
+                colorDark: "#000",
+                colorLight: "#fff",
+                correctLevel: QRCode.CorrectLevel.M
+            });
+
+            $(`#${id} #name`).text(stampInfo.shop);
+            $(`#${id} #address`).text(stampInfo.address);
+            $(`#${id} #email`).text(stampInfo.email);
+            $(`#${id} #phone`).text(stampInfo.phone_number);
+        });
+        $('#stampsModal').modal('show');
     }
 
-    $('#couponModal').on('hidden.bs.modal', function (e) {
+    $('#stampsModal').on('hidden.bs.modal', function (e) {
         isModalOpen = false;
     });
 
     $('#redeemButton').on('click', function(e) {
-        let coupon_id = $('#couponId').val();
+        let member_id = $('#memberId').val();
         let result = null;
         $.ajax({
-            url: SET_MEMBER_COUPON_USED_URL,
+            url: SET_STAMP_USED_URL,
             headers: { 'X-CSRF-TOKEN': '{{csrf_token()}}' },
             type: 'post',
-            data: {coupon_id},
+            data: {member_id},
             async: false,
             success: function (res) { result = res; },
             error: function (xhr) { 
@@ -189,16 +227,22 @@ array(
                 icon: 'error'
             });
         } else if (result.success == false) {           
-            if (result.msg == 'no coupon')  {
+            if (result.msg == 'no member')  {
                 Toast_info_long.fire({
                     title: 'Warning',
-                    text: 'Invalide Coupon. Please contact to super admin.',
+                    text: 'Invalide Member QR Code. Please contact to super admin.',
                     icon: 'warning'
                 });
-            } else if (result.msg == 'expired or used') {
+            } else if (result.msg == 'need 6 stamps') {
                 Toast_info_long.fire({
                     title: 'Warning',
-                    text: 'Coupon is expired or used.',
+                    text: 'Member needs to collect 6 stamps',
+                    icon: 'warning'
+                });
+            } else if (result.msg == 'already redeem') {
+                Toast_info_long.fire({
+                    title: 'Warning',
+                    text: 'He/She is a already redeemed',
                     icon: 'warning'
                 });
             }
@@ -214,6 +258,7 @@ array(
 
 </script>
 <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
 <script src="{{ asset('argon') }}/js/custom/qr-scan.js"></script>
 @endpush
 @endsection

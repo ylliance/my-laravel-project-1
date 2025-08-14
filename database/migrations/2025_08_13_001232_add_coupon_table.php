@@ -14,12 +14,13 @@ class AddCouponTable extends Migration
     public function up()
     {
         Schema::create('coupons', function (Blueprint $table) {
+            $table->id();
             $table->string('coupon_no', 128);
             $table->string('shop', 512);
             $table->string('type');
             $table->integer('value');
             $table->enum('status', ['valid', 'used', 'expired'])->default('expired');
-            $table->integer('member_id');
+            $table->integer('member_id')->nullable(true);
             $table->dateTime('used_at');
             $table->timestamps();
         });

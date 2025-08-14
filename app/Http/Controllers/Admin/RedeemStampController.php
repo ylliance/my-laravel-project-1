@@ -4,25 +4,29 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\MemberStamps;
+use App\RedeemStampHistory;
+use Gate;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 use App\Member;
-use Illuminate\Support\Facades\Log;
+use Auth;
 
-class RedeemTreasureController extends Controller
+class RedeemStampController extends Controller
 {
     public function index()
     {
-        return view("admin.redeem.treasure");
+        abort_if(Gate::denies('redeem_treasure_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        return view("admin.redeem.stamp");
     }
 
     public function getUserStamp(Request $request)
     {
+        abort_if(Gate::denies('redeem_treasure_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         $request->validate([
-            'username' => 'bail|required',
-            'email' => 'bail|required|email',
+            'uuid' => 'bail|required|string',
         ]);
 
-        $member = Member::where('username', $request->username)->where('email', $request->email)->first();
+        $member = Member::where('uuid', $request->uuid)->first();
 
         if (empty($member)) {
             return response()->json([
@@ -34,13 +38,14 @@ class RedeemTreasureController extends Controller
 
         return response()->json([
             'success' => true,
-            'member_id' => $member->id, 
+            'member' => $member, 
             'stamps' => $member->stamps
         ]);
     }
 
     public function setStampUsed(Request $request)
     {
+        abort_if(Gate::denies('redeem_treasure_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         $request->validate([
             'member_id' => 'bail|required|integer',
         ]);
@@ -53,16 +58,33 @@ class RedeemTreasureController extends Controller
             ]);
         }
 
+        $usedStampCount = MemberStamps::where('is_used', true)->count();
+        
+        if ($usedStampCount > 0) {
+            return response()->json([
+                'success' => false,
+                'msg' => 'already redeem'
+            ]);
+        }
+
         $notUsedStampCount = MemberStamps::where('member_id', $request->member_id)->count();
         
         if ($notUsedStampCount < 6) {
             return response()->json([
                 'success' => false,
-                'msg' => 'you need to collect 6 stamps'
+                'msg' => 'need 6 stamps'
             ]);
         }
 
-        MemberStamps::update(['is_used' => true], ['member_id' => $request->member_id]);
+        MemberStamps::where('member_id', $request->member_id)->update(['is_used' => true]);
+
+        $user = Auth::user();
+
+        RedeemStampHistory::create([
+            'user_id' => $user->id,
+            'member_id' => $request->member_id,
+            'comment' => 'Redeem Stamp comment test'
+        ]);
 
         return response()->json([
             'success' => true,

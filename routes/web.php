@@ -41,28 +41,30 @@ Route::group(['middleware' => ['auth']], function () {
 		Route::resource('roles', 'RolesController');
 		Route::resource('users', 'UsersController');
 		Route::resource('members', 'MembersController')->except(['show']);
-		Route::resource('coupons', 'CouponsController')->except(['show']);
+		Route::resource('coupons', 'CouponsController')->except(['show']);		
 
-		Route::get('redeem/treasure', 'RedeemTreasureController@index')->name('redeem.treasure');		
-		Route::post('treasure/getMemberStamps', 'RedeemTreasureController@getUserStamp')->name('treasure.getMemberStamps');
-		Route::post('treasure/setStampUsed', 'RedeemTreasureController@setStampUsed')->name('treasure.setStampUsed');
+		Route::get('members/search', [MembersController::class, 'search'])->name('members.search');
+		Route::get('members/export', [App\Http\Controllers\Admin\MembersController::class, 'export'])->name('members.export');
+		Route::post('members/import', [App\Http\Controllers\Admin\MembersController::class, 'import'])->name('members.import');
 
+		Route::get('coupons/search', [CouponsController::class, 'search'])->name('coupons.search');
+		Route::get('coupons/export', [App\Http\Controllers\Admin\CouponsController::class, 'export'])->name('coupons.export');
+		Route::post('coupons/import', [App\Http\Controllers\Admin\CouponsController::class, 'import'])->name('coupons.import');
+
+		Route::get('redeem/treasure', 'RedeemStampController@index')->name('redeem.treasure');		
+		Route::post('treasure/getMemberStamps', 'RedeemStampController@getUserStamp')->name('treasure.getMemberStamps');
+		Route::post('treasure/setStampUsed', 'RedeemStampController@setStampUsed')->name('treasure.setStampUsed');
 		
 		Route::get('redeem/coupon', 'RedeemCouponController@index')->name('redeem.coupon');		
 		Route::post('coupon/getCoupon', 'RedeemCouponController@getCoupon')->name('coupon.getCoupon');		
-		Route::post('coupon/setCouponUsed', 'RedeemCouponController@setCouponUsed')->name('coupon.setCouponUsed');		
+		Route::post('coupon/setCouponUsed', 'RedeemCouponController@setCouponUsed')->name('coupon.setCouponUsed');			
+		
+		Route::get('used_coupon/index', 'UsedCouponController@index')->name('used_coupon.index');		
+		Route::get('used_coupon/search', 'UsedCouponController@search')->name('used_coupon.search');		
 
 		Route::post('users/createtoken', 'UsersController@createBranchApiToken')->name('users.createtoken');
 	});
 });
-
-Route::get('members/search', [MembersController::class, 'search'])->name('members.search');
-Route::get('members/export', [App\Http\Controllers\Admin\MembersController::class, 'export'])->name('members.export');
-Route::post('members/import', [App\Http\Controllers\Admin\MembersController::class, 'import'])->name('members.import');
-
-Route::get('coupons/search', [CouponsController::class, 'search'])->name('coupons.search');
-Route::get('coupons/export', [App\Http\Controllers\Admin\CouponsController::class, 'export'])->name('coupons.export');
-Route::post('coupons/import', [App\Http\Controllers\Admin\CouponsController::class, 'import'])->name('coupons.import');
 
 
 Route::prefix('member')
@@ -70,5 +72,9 @@ Route::prefix('member')
 	->group(function() {
 		Route::group(['namespace' => 'Member'], function () {
 			Route::get('login', 'LoginController@index')->name('login');
+
+			Route::get('/pay', 'Payment\StripeController@showCheckout')->name('pay.stripe.show');
+			Route::post('/payment-intent', 'Payment\StripeController@createIntent')->name('pay.stripe.intent');
+			Route::get('/pay/success', 'Payment\StripeController@success')->name('pay.success');
 		});
 	});

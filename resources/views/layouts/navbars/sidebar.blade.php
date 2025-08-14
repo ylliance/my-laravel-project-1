@@ -100,7 +100,7 @@
             @can('redeem_treasure_access')
             <li class="nav-item">
                 <a class="nav-link" href="{{route('redeem.treasure')}}">
-                    <i class="fas fa-gem text-blue"></i> {{ __('Redeem Treasure') }}
+                    <i class="fas fa-gem text-blue"></i> {{ __('Redeem Stamp') }}
                 </a>
             </li>
             @endcan
@@ -108,6 +108,13 @@
             <li class="nav-item">
                 <a class="nav-link" href="{{route('redeem.coupon')}}">
                     <i class="fas fa-gift text-blue"></i> {{ __('Redeem Coupon') }}
+                </a>
+            </li>
+            @endcan
+            @can('redeem_coupon_access')
+            <li class="nav-item">
+                <a class="nav-link" href="{{route('used_coupon.index')}}">
+                    <i class="fas fa-eye-slash text-blue"></i> {{ __('Used Coupon') }}
                 </a>
             </li>
             @endcan

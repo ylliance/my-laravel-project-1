@@ -15,7 +15,14 @@ class MemberSeeder extends Seeder
         Schema::disableForeignKeyConstraints();
         \DB::table('members')->truncate();
         Schema::enableForeignKeyConstraints();
-        
+
+        DB::table('members')->insert([
+            'uuid' => 'eb0baac3-086b-3095-a292-822d4b4f91f4',
+            'username' => 'Test User',
+            'phone_number' => '838-274-8156',
+            'email'=> 'test_user@test.com',
+        ]);
+
         factory(Member::class, 2500)->create();
     }
 }

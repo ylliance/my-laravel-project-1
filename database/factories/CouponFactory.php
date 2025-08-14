@@ -11,8 +11,8 @@ $factory->define(Coupon::class, function (Faker $faker) {
         'shop' => $faker->word,
         'type' => $faker->numberBetween(1,3),
         'value' => $faker->numberBetween(1,100),
-        'status' => $faker->numberBetween(0,2), /* valid: 0, used: 1, expired: 2*/ 
-        'member_id' => $faker->numberBetween(0,20), 
+        'status' => $faker->randomElement(['valid', 'used', 'expired']),
+        'member_id' => $faker->randomElement([null, 1, 2, 3, 4]), 
         'used_at' => $faker->dateTimeBetween('-1 year', 'now'),
         'created_at' => $faker->dateTimeBetween('-1 year', 'now'),
         'updated_at' => $faker->dateTimeBetween('-1 year', 'now'),
