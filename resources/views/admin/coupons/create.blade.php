@@ -33,12 +33,12 @@ array(
                         <div class="form-row">
                             <div class="col-md-6 mb-3">
                                 <div class="form-group">
-                                    <label class="form-control-label" for="validationDefault01">{{__('Username:')}}</label>
-                                    <input type="text" name="username" value="{{ old('username') }}"
-                                        class="form-control  @error('username') invalid-input @enderror"
-                                        placeholder="{{__('Please Enter Username')}}" autofocus required>
+                                    <label class="form-control-label" for="validationDefault01">{{__('Coupon Number:')}}</label>
+                                    <input type="text" name="coupon_no" value="{{ old('coupon_no') }}"
+                                        class="form-control  @error('coupon_no') invalid-input @enderror"
+                                        placeholder="{{__('Please Enter Coupon Number')}}" autofocus required>
 
-                                    @error('username')
+                                    @error('coupon_no')
                                     <div class="invalid-div">{{ $message }}</div>
                                     @enderror
                                 </div>
@@ -46,11 +46,25 @@ array(
 
                             <div class="col-md-6 mb-3">
                                 <div class="form-group">
-                                    <label class="form-control-label" for="validationDefault01">{{__('Email:')}}</label>
-                                    <input type="email" name="email" value="{{ old('email') }}"
-                                        class="form-control  @error('email') invalid-input @enderror" placeholder="{{__('Please Enter Email')}}" required>
+                                    <label class="form-control-label" for="validationDefault01">{{__('Shop:')}}</label>
+                                    <input type="text" name="shop" value="{{ old('shop') }}"
+                                        class="form-control  @error('shop') invalid-input @enderror"
+                                        placeholder="{{__('Please Enter Shop')}}" autofocus required>
 
-                                    @error('email')
+                                    @error('shop')
+                                    <div class="invalid-div">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <div class="form-group">
+                                    <label class="form-control-label" for="validationDefault01">{{__('Type:')}}</label>
+                                    <input type="text" name="type" value="{{ old('type') }}"
+                                        class="form-control  @error('type') invalid-input @enderror"
+                                        placeholder="{{__('Please Select Type')}}" autofocus required>
+
+                                    @error('type')
                                     <div class="invalid-div">{{ $message }}</div>
                                     @enderror
                                 </div>
@@ -58,16 +72,16 @@ array(
 
                             <div class="col-md-6 mb-3">
                                 <div class="form-group">
-                                    <label class="form-control-label" for="validationDefault01">{{__('Phone Number:')}}</label>
-                                    <input type="text" name="phone_number" value="{{ old('phone_number') }}"
-                                        class="form-control  @error('phone_number') invalid-input @enderror" placeholder="{{__('Please Enter Phone Number')}}" required>
+                                    <label class="form-control-label" for="validationDefault01">{{__('Value:')}}</label>
+                                    <input type="text" name="value" value="{{ old('value') }}"
+                                        class="form-control  @error('value') invalid-input @enderror"
+                                        placeholder="{{__('Please Enter Value')}}" autofocus required>
 
-                                    @error('phone_number')
+                                    @error('value')
                                     <div class="invalid-div">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>
-
                         </div>
 
 

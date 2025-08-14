@@ -18,7 +18,7 @@ class CouponsController extends Controller
             }
             // Insert non-duplicate coupons
             foreach ($pending['coupons'] as $coupon) {
-                if (!in_array($coupon['username'], $pending['duplicates'])) {
+                if (!in_array($coupon['coupon_no'], $pending['duplicates'])) {
                     Coupon::create($coupon);
                 }
             }
@@ -44,11 +44,12 @@ class CouponsController extends Controller
             $data = array_combine($header, $row);
             // Debug output for $data
             $coupons[] = [
-                'username' => $data['username'] ?? '',
-                'email' => $data['email'] ?? '',
-                'phone_number' => $data['phone_number'] ?? '',
-                'created_at' => $data['created_at'] ?? now(),
-                'last_login' => $data['last_login'] ?? null,
+                'coupon_no' => $data['coupon_no'] ?? '',
+                'shop' => $data['shop'] ?? '',
+                'type' => $data['type'] ?? '',
+                'value' => $data['value'] ?? '',
+                'status' => $data['status'] ?? '',
+                'used_at' => $data['used_at'] ?? null,
             ];
         }
         fclose($handle);
@@ -56,24 +57,24 @@ class CouponsController extends Controller
         // Check for duplicates by username/email/phone_number
         $duplicates = [];
         foreach ($coupons as $coupon) {
-            $exists = Coupon::where('username', $coupon['username'])
-                ->orWhere('email', $coupon['email'])
-                ->orWhere('phone_number', $coupon['phone_number'])
+            $exists = Coupon::where('coupon_no', $coupon['coupon_no'])
                 ->exists();
             if ($exists) {
-                $duplicates[] = $coupon['username'];
+                $duplicates[] = $coupon['coupon_no'];
             }
         }
 
         if ($duplicates) {
             // Store pending import in session for skip
-            session(['pending_import' => [
-                'coupons' => $coupons,
-                'duplicates' => $duplicates
-            ]]);
+            session([
+                'pending_import' => [
+                    'coupons' => $coupons,
+                    'duplicates' => $duplicates
+                ]
+            ]);
             // Return duplicate info for modal
-            $dupeDetails = array_filter($coupons, function($m) use ($duplicates) {
-                return in_array($m['username'], $duplicates);
+            $dupeDetails = array_filter($coupons, function ($m) use ($duplicates) {
+                return in_array($m['coupon_no'], $duplicates);
             });
             return response()->json(['duplicates' => array_values($dupeDetails)]);
         } else {
@@ -86,26 +87,27 @@ class CouponsController extends Controller
     }
     public function export()
     {
-        $coupons = Coupon::all(['id', 'username', 'phone_number', 'email', 'last_login']);
-        $filename = 'members_' . now()->format('Ymd_His') . '.csv';
+        $coupons = Coupon::all(['coupon_no', 'shop', 'type', 'value', 'status', 'used_at']);
+        $filename = 'coupons_' . now()->format('Ymd_His') . '.csv';
 
         $headers = [
             'Content-Type' => 'text/csv',
             'Content-Disposition' => "attachment; filename=$filename",
         ];
 
-        $callback = function() use ($coupons) {
+        $callback = function () use ($coupons) {
             $handle = fopen('php://output', 'w');
             // CSV header
-            fputcsv($handle, ['id', 'username', 'phone_number', 'email', 'last_login']);
+            fputcsv($handle, ['coupon_no', 'shop', 'type', 'value', 'status', 'used_at']);
             // CSV rows
             foreach ($coupons as $coupon) {
                 fputcsv($handle, [
-                    $coupon->id,
-                    $coupon->username,
-                    $coupon->phone_number,
-                    $coupon->email,
-                    $coupon->last_login,
+                    $coupon->coupon_no,
+                    $coupon->shop,
+                    $coupon->type,
+                    $coupon->value,
+                    $coupon->status,
+                    $coupon->used_at,
                 ]);
             }
             fclose($handle);
@@ -116,24 +118,25 @@ class CouponsController extends Controller
 
     public function index()
     {
-        abort_if(Gate::denies('member_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('coupon_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         $coupons = Coupon::paginate(10);
         return view('admin.coupons.index', compact('coupons'));
     }
 
     public function create()
     {
-        abort_if(Gate::denies('member_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('coupon_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         return view('admin.coupons.create');
     }
 
     public function store(Request $request)
     {
-        abort_if(Gate::denies('member_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('coupon_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         $request->validate([
-            'username' => 'bail|required|max:255|min:4',
-            'email' => 'bail|required|email|unique:coupons|max:255',
-            'phone_number' => 'bail|required',
+            'coupon_no' => 'bail|required|max:255|min:4',
+            'shop' => 'bail|required',
+            'type' => 'bail|required',
+            'value' => 'bail|required',
         ]);
         Coupon::create($request->all());
         return redirect()->route('coupons.index')->withStatus(__('Coupon is added successfully.'));
@@ -141,13 +144,13 @@ class CouponsController extends Controller
 
     public function edit(Coupon $coupon)
     {
-        abort_if(Gate::denies('member_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('coupon_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         return view('admin.coupons.edit', compact('coupon'));
     }
 
     public function update(Request $request, Coupon $coupon)
     {
-        abort_if(Gate::denies('member_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('coupon_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         $request->validate([
             'username' => 'bail|required|max:255|min:4',
             'email' => 'bail|required|email|max:255|unique:coupons,email,' . $coupon->id,
@@ -159,7 +162,7 @@ class CouponsController extends Controller
 
     public function destroy(Coupon $coupon)
     {
-        abort_if(Gate::denies('member_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('coupon_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         $coupon->delete();
         return back()->withStatus(__('Coupon is deleted successfully.'));
     }
@@ -173,10 +176,9 @@ class CouponsController extends Controller
 
         $couponsQuery = Coupon::query();
         if ($search) {
-            $couponsQuery->where(function($q) use ($search) {
-                $q->where('username', 'like', "%$search%")
-                  ->orWhere('email', 'like', "%$search%")
-                  ->orWhere('phone_number', 'like', "%$search%");
+            $couponsQuery->where(function ($q) use ($search) {
+                $q->where('coupon_no', 'like', "%$search%")
+                    ->orWhere('shop', 'like', "%$search%");
             });
         }
 
