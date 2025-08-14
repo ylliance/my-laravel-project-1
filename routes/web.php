@@ -4,6 +4,7 @@
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\MembersController;
+use App\Http\Controllers\Admin\CouponsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,11 +36,12 @@ Route::group(['middleware' => ['auth']], function () {
 	Route::group(['namespace' => 'Admin'], function () {
 
 		Route::resources([
-			'coupon' => 'CouponController',
+			'coupon' => 'CouponsController',
 		]);
 		Route::resource('roles', 'RolesController');
 		Route::resource('users', 'UsersController');
 		Route::resource('members', 'MembersController')->except(['show']);
+		Route::resource('coupons', 'CouponsController')->except(['show']);
 
 		Route::get('redeem/treasure', 'RedeemTreasureController@index')->name('redeem.treasure');		
 		Route::post('treasure/getMemberStamps', 'RedeemTreasureController@getUserStamp')->name('treasure.getMemberStamps');
@@ -57,6 +59,10 @@ Route::group(['middleware' => ['auth']], function () {
 Route::get('members/search', [MembersController::class, 'search'])->name('members.search');
 Route::get('members/export', [App\Http\Controllers\Admin\MembersController::class, 'export'])->name('members.export');
 Route::post('members/import', [App\Http\Controllers\Admin\MembersController::class, 'import'])->name('members.import');
+
+Route::get('coupons/search', [CouponsController::class, 'search'])->name('coupons.search');
+Route::get('coupons/export', [App\Http\Controllers\Admin\CouponsController::class, 'export'])->name('coupons.export');
+Route::post('coupons/import', [App\Http\Controllers\Admin\CouponsController::class, 'import'])->name('coupons.import');
 
 
 Route::prefix('member')
