@@ -72,7 +72,7 @@ array(
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" id='redeemButton'>Redeem</button>
-                <a href="#" class="btn btn-text-secondary" data-bs-dismiss="modal">Close</a>
+                <button type="button" class="btn btn-secondary" id='closeButton'>Close</button>
             </div>
         </div>
     </div>
@@ -129,17 +129,16 @@ array(
     const onQRCodeResultCallback = function(data) {
         if (data == null || data.trim() == "")
             return;
-        
         try {
             const jsonData = JSON.parse(data);
             getMemberCoupon(jsonData);
         } catch (error) {
 
         }
-        getMemberCoupon({
-            'coupon_no': 'S546124$*%2343423534',
-            'member_id': 1
-        });
+        // getMemberCoupon({
+        //     'coupon_no': 'S546124$*%2343423534',
+        //     'member_id': 1
+        // });
     };
 
     function showCouponDialog(result) {       
@@ -211,6 +210,10 @@ array(
             });
         }
     })
+
+    $('#closeButton').on('click', function (e) {
+        $('#couponModal').modal('hide');
+    });
 
 </script>
 <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>

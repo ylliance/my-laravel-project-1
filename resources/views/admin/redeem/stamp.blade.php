@@ -83,7 +83,7 @@ array(
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" id='redeemButton'>Redeem</button>
-                <a href="#" class="btn btn-text-secondary" data-bs-dismiss="modal">Close</a>
+                <button type="button" class="btn btn-secondary" id='closeButton'>Close</button>
             </div>
         </div>
     </div>
@@ -137,12 +137,12 @@ array(
             const userInfo = JSON.parse(data);
             getMemberStamps(userInfo);
         } catch (error) {
-
+            console.log(error);
         }
 
-        getMemberStamps({
-            uuid: 'eb0baac3-086b-3095-a292-822d4b4f91f4',          
-        })
+        // getMemberStamps({
+        //     uuid: 'eb0baac3-086b-3095-a292-822d4b4f91f4',          
+        // })
     };
 
     function showUserStampDialog(result) {       
@@ -242,7 +242,7 @@ array(
             } else if (result.msg == 'already redeem') {
                 Toast_info_long.fire({
                     title: 'Warning',
-                    text: 'He/She is a already redeemed',
+                    text: 'He/She is already redeemed',
                     icon: 'warning'
                 });
             }
@@ -255,6 +255,10 @@ array(
             });
         }
     })
+
+    $('#closeButton').on('click', function (e) {
+        $('#stampsModal').modal('hide');
+    });
 
 </script>
 <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>

@@ -32,7 +32,7 @@ Copyright 2018 Creative Tim (https://www.creative-tim.com) & UPDIVISION (https:/
     --gray-dark: #32325d;
     --light: #ced4da;
     --lighter: #e9ecef;
-    --primary: #fb6340;         /* wallet primary color */
+    --primary: #4169E1;         /* wallet primary color */
     --primary2: #D7C69D;
     --secondary: #f7fafc;
     --success: #2dce89;
@@ -19418,7 +19418,7 @@ textarea[resize='horizontal']
 }
 .navbar-vertical.navbar-expand-xs .navbar-brand-img
 {
-    max-height: 2.5rem;
+    max-height: 5rem;
 }
 .navbar-vertical.navbar-expand-xs .navbar-user
 {
@@ -19543,7 +19543,7 @@ textarea[resize='horizontal']
     }
     .navbar-vertical.navbar-expand-sm .navbar-brand-img
     {
-        max-height: 2.5rem;
+        max-height: 5rem;
     }
     .navbar-vertical.navbar-expand-sm .navbar-user
     {
@@ -19669,7 +19669,7 @@ textarea[resize='horizontal']
     }
     .navbar-vertical.navbar-expand-md .navbar-brand-img
     {
-        max-height: 2.5rem;
+        max-height: 5rem;
     }
     .navbar-vertical.navbar-expand-md .navbar-user
     {
@@ -19795,7 +19795,7 @@ textarea[resize='horizontal']
     }
     .navbar-vertical.navbar-expand-lg .navbar-brand-img
     {
-        max-height: 2.5rem;
+        max-height: 5rem;
     }
     .navbar-vertical.navbar-expand-lg .navbar-user
     {
@@ -19921,7 +19921,7 @@ textarea[resize='horizontal']
     }
     .navbar-vertical.navbar-expand-xl .navbar-brand-img
     {
-        max-height: 2.5rem;
+        max-height: 4rem;
     }
     .navbar-vertical.navbar-expand-xl .navbar-user
     {
