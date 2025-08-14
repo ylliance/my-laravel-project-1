@@ -152,9 +152,10 @@ class CouponsController extends Controller
     {
         abort_if(Gate::denies('coupon_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         $request->validate([
-            'username' => 'bail|required|max:255|min:4',
-            'email' => 'bail|required|email|max:255|unique:coupons,email,' . $coupon->id,
-            'phone_number' => 'bail|required',
+            'coupon_no' => 'bail|required|max:255|min:4',
+            'shop' => 'bail|required',
+            'type' => 'bail|required',
+            'value' => 'bail|required',
         ]);
         $coupon->update($request->all());
         return redirect()->route('coupons.index')->withStatus(__('Coupon is updated successfully.'));
