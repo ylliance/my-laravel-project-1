@@ -1,20 +1,24 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
+@include('layouts.headers.header',
+array(
+'class'=>'info',
+'title'=>"Members",'description'=>'',
+'icon'=>'fas fa-home',
+'breadcrumb'=>array([
+'text'=>'Member List'
+])))
+<div class="container-fluid mt--7">
+    <div class="row">
+        <div class="col-md-12">
             <div class="card">
-                <div class="card-header">Dashboard</div>
+                <div class="card-header">
+                    <h3 class="mb-0">{{ __('Home') }}</h3>
+                </div>
 
                 <div class="card-body">
-                    @if (session('status'))
-                        <div class="alert alert-success" role="alert">
-                            {{ session('status') }}
-                        </div>
-                    @endif
-
-                    You are logged in!
+                    <p>Welcome to the website! This application provides tools to manage roles, users, members and coupons.</p>
                 </div>
             </div>
         </div>

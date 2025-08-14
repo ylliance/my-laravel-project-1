@@ -62,6 +62,12 @@
         <!-- Navigation -->
         <ul class="navbar-nav">
             <h6 class="navbar-heading text-muted "></h6>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('home') }}">
+                    <i class="ni ni-tv-2 text-blue"></i> {{ __('Home') }}
+                </a>
+            </li>
 
             @can('role_access')
             <li class="nav-item">
