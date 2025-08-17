@@ -76,5 +76,10 @@ Route::prefix('member')
 			Route::get('/pay', 'Payment\StripeController@showCheckout')->name('pay.stripe.show');
 			Route::post('/payment-intent', 'Payment\StripeController@createIntent')->name('pay.stripe.intent');
 			Route::get('/pay/success', 'Payment\StripeController@success')->name('pay.success');
+
+			Route::post('/alipayhk/checkout', 'Payment\AlipayHkController@checkout');
+			Route::get('/alipayhk/return', 'Payment\AlipayHkController@return')->name('alipayhk.return');
+			Route::post('/webhooks/alipayplus/payment', 'Payment\AlipayHkController@webhook');
+
 		});
 	});

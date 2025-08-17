@@ -21,6 +21,8 @@ class MemberSeeder extends Seeder
             'username' => 'Test User',
             'phone_number' => '838-274-8156',
             'email'=> 'test_user@test.com',
+            'created_at' => new DateTime,
+            'updated_at' => new DateTime,
         ]);
 
         factory(Member::class, 2500)->create();

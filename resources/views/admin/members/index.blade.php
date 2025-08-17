@@ -9,6 +9,18 @@ array(
 'breadcrumb'=>array([
 'text'=>'Member List'
 ])))
+@push('css')
+    <style>
+        .qr {
+            width: 40px;
+            height: 40px;
+            display: inline-block;
+        }
+        .qr-wrap {
+            margin-left: 4px;
+        }
+    </style>
+@endpush
 <div class="container-fluid mt--7">
     <div class="row">
         <div class="col">
@@ -189,10 +201,14 @@ $(function () {
           // data is an array of stamp objects
           if (!Array.isArray(data) || data.length === 0) return '';
           var html = '<div style="display:flex;">';
-            data.forEach(function(stamp) {
-            // Use moment.js to format datetime
-            var formatted = stamp.created_at ? moment(stamp.created_at).format('YYYY-MM-DD HH:mm:ss') : '';
-            html += '<img src="/argon/img/stamp.png" alt="stamp" style="height:32px;margin-right:4px;" title="' + formatted + '">';
+            data.forEach(function(stamp) {              
+              var formatted = stamp.created_at ? moment(stamp.created_at).format('YYYY-MM-DD HH:mm:ss') : '';
+              html += 
+                `
+                  <div class="qr-wrap" data-url="${stamp.qr_code}" data-row-id="${stamp.id}" >
+                    <div class="qr" title="${formatted}"></div>
+                  </div>
+                `;
           });
           html += '</div>';
           return html;
@@ -216,6 +232,26 @@ $(function () {
     },
   });
 });
+
+$('#membersDataTable').on('draw.dt', function () {
+  $('#membersDataTable .qr-wrap').each(function () {
+    const wrap = this;
+    const qr_code = wrap.getAttribute('data-url');
+    const qrContainer = wrap.querySelector('.qr');
+
+    // If a QR already exists for this cell, skip.
+    if (qrContainer && (qrContainer.querySelector('img') || qrContainer.querySelector('canvas'))) return;
+
+    // Generate QR (64x64). CorrectLevel.M is a good balance for table cells.
+    new QRCode(qrContainer, {
+      text: qr_code,
+      width: 40,
+      height: 40,
+      correctLevel: QRCode.CorrectLevel.M,
+    });
+  });
+});
 </script>
+<script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
 @endpush
 @endsection
