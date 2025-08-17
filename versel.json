@@ -1,0 +1,19 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+
+  "functions": {
+    "api/index.php": {
+      "runtime": "vercel-php@0.7.4",
+      "maxDuration": 60
+    }
+  },
+
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/api/index.php" }
+  ],
+
+  "regions": ["fra1"],
+
+  "installCommand": "composer install --no-dev --prefer-dist --no-interaction && npm ci",
+  "buildCommand": "php artisan key:generate --force && php artisan config:cache && php artisan route:cache && npm run build"
+}
